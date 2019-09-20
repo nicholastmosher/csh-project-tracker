@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  database:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: project_tracker
+      POSTGRES_PASSWORD: csh-project-tracker-development
+    ports:
+      - 5432:5432
