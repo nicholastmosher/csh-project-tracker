@@ -10,6 +10,8 @@ edition = "2018"
 serde = { version = "1.0.101", features = ["derive"] }
 diesel = { version= "1.4.2", features = ["postgres"] }
 dotenv = "0.14.1"
+actix-web = "1.0.7"
+listenfd = "0.3.3"
 
 [lib]
 name = "csh_project_tracker"
