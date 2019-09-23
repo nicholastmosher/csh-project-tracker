@@ -7,6 +7,7 @@ use diesel::prelude::*;
 use diesel::PgConnection;
 use dotenv::dotenv;
 
+pub mod db;
 pub mod models;
 pub mod schema;
 
