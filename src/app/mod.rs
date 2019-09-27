@@ -1,20 +1,17 @@
-use std::env;
 use actix::{Addr, SyncArbiter};
 use actix_web::{App, web, HttpServer, Responder};
-use crate::db::{self, DbExecutor};
+use crate::db::DbExecutor;
+
+pub mod projects;
 
 pub struct AppState {
     db: Addr<DbExecutor>,
 }
 
-fn index() -> impl Responder {
-    "Hello, what the shit!"
-}
-
-pub fn launch() -> std::io::Result<()> {
+pub fn launch<S: Into<String>>(database_url: S) -> std::io::Result<()> {
+    let database_url = database_url.into();
     let mut listenfd = listenfd::ListenFd::from_env();
 
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let database_addr = SyncArbiter::start(
         num_cpus::get(),
         move || DbExecutor::new(database_url.clone()),
@@ -24,15 +21,16 @@ pub fn launch() -> std::io::Result<()> {
         App::new()
             .data(AppState { db: database_addr.clone() })
             .service(web::scope("/api/v1")
-                .route("/index.html", web::get().to(index)))
+                .route("/projects", web::post().to_async(projects::create))
+            )
     );
 
-    server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
+    server = if let Some(l) = listenfd.take_tcp_listener(0)? {
         server.listen(l)?
     } else {
         server.bind("127.0.0.1:3000")?
     };
 
-    server.run().unwrap();
+    server.run()?;
     Ok(())
 }

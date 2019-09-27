@@ -1,9 +1,10 @@
 use serde::{Serialize, Deserialize};
-use diesel::Queryable;
+use diesel::{Queryable, Insertable};
+use crate::schema::projects;
 
-#[derive(Debug, Serialize, Deserialize, Queryable)]
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 pub struct Project {
-    project_id: i32,
-    title: String,
-    description: Option<String>,
+    pub project_id: i32,
+    pub title: String,
+    pub description: Option<String>,
 }

@@ -1,22 +1,12 @@
-use diesel::prelude::*;
+use std::env;
+use std::io;
+use dotenv::dotenv;
 
-use csh_project_tracker::{
-    models::*,
-    establish_connection,
-};
-
-fn main() {
-    use csh_project_tracker::schema::projects::dsl::*;
-
-    let connection = establish_connection();
-    let results = projects.load::<Project>(&connection)
-        .expect("Error loading projects");
-
-    for project in results {
-        println!("{:?}", project);
-    }
-
+fn main() -> io::Result<()> {
+    dotenv().ok();
     let sys = actix::System::new("csh-project-tracker");
-    let _ = csh_project_tracker::app::launch();
-    let _ = sys.run();
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL should be set");
+    csh_project_tracker::app::launch(database_url)?;
+    sys.run()?;
+    Ok(())
 }
